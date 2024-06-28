@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import random
 
 app = FastAPI()
 
@@ -10,6 +11,17 @@ class Post(BaseModel):
     content: str
     published: bool = True
     rating: int | None = None  # setting none makes this field optional
+    id: int = 0
+
+
+# temp placeholder in lieu of DB
+my_posts = []
+
+
+def find_post(id):
+    for post in my_posts:
+        if post["id"] == id:
+            return post
 
 
 @app.get("/")
@@ -19,10 +31,18 @@ async def root():
 
 @app.get("/posts")
 def get_posts():
-    return {"msg": "here are the posts"}
+    return {"data": my_posts}
 
 
 @app.post("/posts")
-# using the body method from fastapi to read the body of the request and assign it to the payload using the spread operator
 def new_post(post: Post):
-    return post
+    post_dict = post.model_dump()  # generate dict rep of model
+    post_dict["id"] = random.randint(1, 100000)
+    my_posts.insert(0, post_dict)
+    return post_dict
+
+
+@app.get("/posts/{id}")
+def get_post(id: int):
+    post = find_post(id)
+    return {"post_details": post}
