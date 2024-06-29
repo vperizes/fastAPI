@@ -24,6 +24,12 @@ def find_post(id):
             return post
 
 
+def find_index_post(id):
+    for i, post in enumerate(my_posts):
+        if post["id"] == id:
+            return i
+
+
 @app.get("/")
 async def root():
     return {"msg": "Welcome"}
@@ -56,8 +62,21 @@ def get_post(id: int):
 def delete_post(id: int):
     post = find_post(id)
     if not post:
-        raise HTTPException(
+        return HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
         )
     my_posts.remove(post)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.put("/posts/{id}")
+def update_post(id: int, post: Post):
+    index = find_index_post(id)
+    if index == None:
+        return HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
+        )
+    post_dict = post.model_dump()
+    post_dict["id"] = id  # persist id between updates
+    my_posts[index] = post_dict
+    return {"msg": f"post with ID {id} has been updated", "data": post_dict}
