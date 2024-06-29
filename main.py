@@ -22,8 +22,6 @@ def find_post(id):
     for post in my_posts:
         if post["id"] == id:
             return post
-        else:
-            raise HTTPException(status_code=404, detail=f"ID {id} not found")
 
 
 @app.get("/")
@@ -47,4 +45,19 @@ def new_post(post: Post):
 @app.get("/posts/{id}")
 def get_post(id: int):
     post = find_post(id)
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
+        )
     return {"post_details": post}
+
+
+@app.delete("/posts/{id}")
+def delete_post(id: int):
+    post = find_post(id)
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
+        )
+    my_posts.remove(post)
+    return {"msg": f"post with ID {id} has been deleted"}
