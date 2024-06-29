@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException, Response
 from pydantic import BaseModel
 import random
 
@@ -52,7 +52,7 @@ def get_post(id: int):
     return {"post_details": post}
 
 
-@app.delete("/posts/{id}")
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
     post = find_post(id)
     if not post:
@@ -60,4 +60,4 @@ def delete_post(id: int):
             status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
         )
     my_posts.remove(post)
-    return {"msg": f"post with ID {id} has been deleted"}
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
