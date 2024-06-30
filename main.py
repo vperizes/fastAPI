@@ -41,7 +41,7 @@ def get_posts():
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def new_post(post: Post):
+def create_post(post: Post):
     post_dict = post.model_dump()  # generate dict rep of model
     post_dict["id"] = random.randint(1, 100000)
     my_posts.insert(0, post_dict)
