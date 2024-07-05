@@ -92,12 +92,14 @@ def delete_post(id: int):
 
 @app.put("/posts/{id}")
 def update_post(id: int, post: Post):
-    index = find_index_post(id)
-    if index == None:
-        return HTTPException(
+    cur.execute(
+        """ UPDATE posts SET title = %s, content = %s, published = %s WHERE id=%s RETURNING *; """,
+        (post.title, post.content, post.published, id),
+    )
+    updated_post = cur.fetchone()
+    conn.commit()
+    if not updated_post:
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
         )
-    post_dict = post.model_dump()
-    post_dict["id"] = id  # persist id between updates
-    my_posts[index] = post_dict
-    return {"msg": f"post with ID {id} has been updated", "data": post_dict}
+    return {"msg": f"post with ID {id} has been updated", "data": updated_post}
