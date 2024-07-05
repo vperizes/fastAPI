@@ -38,12 +38,6 @@ except Exception as err:
 # my_posts = []
 
 
-def find_post(id):
-    for post in my_posts:
-        if post["id"] == id:
-            return post
-
-
 def find_index_post(id):
     for i, post in enumerate(my_posts):
         if post["id"] == id:
@@ -74,8 +68,9 @@ def create_post(post: Post):
 
 
 @app.get("/posts/{id}")
-def get_post(id: int):
-    post = find_post(id)
+def get_post(id):
+    cur.execute("""SELECT * FROM posts WHERE id = %s;""", [id])
+    post = cur.fetchone()
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
@@ -85,12 +80,13 @@ def get_post(id: int):
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
-    post = find_post(id)
-    if not post:
-        return HTTPException(
+    cur.execute(""" DELETE FROM posts WHERE id = %s RETURNING *; """, [id])
+    deleted_post = cur.fetchone()
+    conn.commit()
+    if not deleted_post:
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"ID {id} not found"
         )
-    my_posts.remove(post)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
