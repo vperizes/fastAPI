@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import random
 import psycopg
+from psycopg.rows import dict_row
 
 app = FastAPI()
 load_dotenv()
@@ -14,7 +15,6 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
-    id: int = 0
 
 
 try:
@@ -23,7 +23,10 @@ try:
         dbname=os.getenv("DBNAME"),
         user=os.getenv("USER"),
         password=os.getenv("PASS"),
+        row_factory=dict_row,  # add row factory to return key:val pair
     )
+
+    # Open a cursor to perform database operations
     cur = conn.cursor()
     print("Database connection was successful")
 except Exception as err:
@@ -31,8 +34,8 @@ except Exception as err:
     print("Error: ", err)
 
 
-# temp placeholder in lieu of DB
-my_posts = []
+# # temp placeholder in lieu of DB
+# my_posts = []
 
 
 def find_post(id):
@@ -54,15 +57,20 @@ async def root():
 
 @app.get("/posts")
 def get_posts():
-    return {"data": my_posts}
+    cur.execute("SELECT * FROM posts")
+    all_posts = cur.fetchall()
+    return {"data": all_posts}
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post):
-    post_dict = post.model_dump()  # generate dict rep of model
-    post_dict["id"] = random.randint(1, 100000)
-    my_posts.insert(0, post_dict)
-    return post_dict
+    cur.execute(
+        """INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *;""",
+        (post.title, post.content, post.published),
+    )
+    new_post = cur.fetchone()
+    conn.commit()  # persist change to db
+    return {"data": new_post}
 
 
 @app.get("/posts/{id}")
