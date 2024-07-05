@@ -34,16 +34,6 @@ except Exception as err:
     print("Error: ", err)
 
 
-# # temp placeholder in lieu of DB
-# my_posts = []
-
-
-def find_index_post(id):
-    for i, post in enumerate(my_posts):
-        if post["id"] == id:
-            return i
-
-
 @app.get("/")
 async def root():
     return {"msg": "Welcome"}
