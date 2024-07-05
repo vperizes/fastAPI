@@ -1,8 +1,12 @@
 from fastapi import FastAPI, status, HTTPException, Response
 from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
 import random
+import psycopg
 
 app = FastAPI()
+load_dotenv()
 
 
 # create schema that extends BaseModel class
@@ -10,8 +14,21 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
-    rating: int | None = None  # setting none makes this field optional
     id: int = 0
+
+
+try:
+    conn = psycopg.connect(
+        host=os.getenv("HOST"),
+        dbname=os.getenv("DBNAME"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASS"),
+    )
+    cur = conn.cursor()
+    print("Database connection was successful")
+except Exception as err:
+    print("Database connection failed")
+    print("Error: ", err)
 
 
 # temp placeholder in lieu of DB
