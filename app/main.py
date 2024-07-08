@@ -2,7 +2,6 @@ from fastapi import FastAPI, status, HTTPException, Response
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
-import random
 import psycopg
 from psycopg.rows import dict_row
 
