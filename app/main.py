@@ -1,9 +1,15 @@
-from fastapi import FastAPI, status, HTTPException, Response
+from fastapi import FastAPI, status, HTTPException, Response, Depends
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 import psycopg
 from psycopg.rows import dict_row
+
+from . import models
+from .database import engine, get_db
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 load_dotenv()
@@ -36,6 +42,11 @@ except Exception as err:
 @app.get("/")
 async def root():
     return {"msg": "Welcome"}
+
+
+@app.get("/sqlalchemytest")
+def run_test(db: Session = Depends(get_db)):
+    return {"msg": "test successful"}
 
 
 @app.get("/posts")
