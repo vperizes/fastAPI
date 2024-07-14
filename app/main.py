@@ -1,26 +1,17 @@
 from fastapi import FastAPI, status, HTTPException, Response, Depends
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 import psycopg
 from psycopg.rows import dict_row
 
-from . import models
+from . import models, schemas
 from .database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 load_dotenv()
-
-
-# create schema (pydantic model) that extends BaseModel class (defines shape of data)
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-
 
 try:
     conn = psycopg.connect(
@@ -53,7 +44,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: Post, db: Session = Depends(get_db)):
+def create_post(post: schemas.Post, db: Session = Depends(get_db)):
     # cur.execute(
     #     """INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *;""",
     #     (post.title, post.content, post.published),
@@ -99,7 +90,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id}")
-def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+def update_post(id: int, post: schemas.Post, db: Session = Depends(get_db)):
     # cur.execute(
     #     """ UPDATE posts SET title = %s, content = %s, published = %s WHERE id=%s RETURNING *; """,
     #     (post.title, post.content, post.published, id),
