@@ -23,7 +23,7 @@ class Post(Base):
     created_at = Column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
-    owner = relationship("User", back_populates="posts")
+    # owner = relationship("User", back_populates="posts")
 
 
 class User(Base):
@@ -39,4 +39,4 @@ class User(Base):
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
 
-    posts = relationship("Post", back_populates="owner")
+    # posts = relationship("Post", back_populates="owner")
