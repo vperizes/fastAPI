@@ -4,7 +4,7 @@ from typing import List
 from .. import models, schemas
 from ..database import get_db
 
-router = APIRouter(prefix="/posts")
+router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 ###### POST ROUTES ######

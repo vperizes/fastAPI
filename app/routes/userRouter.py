@@ -4,7 +4,7 @@ from .. import models, schemas
 from ..database import get_db
 from ..passwordUtils import get_password
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 ###### USER ROUTES ######
