@@ -36,6 +36,19 @@ async def root():
     return {"msg": "Welcome"}
 
 
+###### USER ROUTES ######
+@app.post("/new-user", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    new_user = models.User(**user.model_dump())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
+###### POST ROUTES ######
+
+
 @app.get("/posts", response_model=List[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # cur.execute("SELECT * FROM posts")
