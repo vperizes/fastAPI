@@ -4,7 +4,7 @@ from .. import models, schemas
 from ..database import get_db
 from ..passwordUtils import get_password
 
-router = APIRouter()
+router = APIRouter(prefix="/users")
 
 
 ###### USER ROUTES ######
@@ -24,9 +24,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.get(
-    "/users/{id}", status_code=status.HTTP_200_OK, response_model=schemas.UserOut
-)
+@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
 def get_user(id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == id).first()
 
