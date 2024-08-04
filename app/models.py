@@ -23,3 +23,20 @@ class Post(Base):
     created_at = Column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
+    owner = relationship("User", back_populates="posts")
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    username = Column(String, nullable=False)
+    email = Column(
+        String, nullable=False, unique=True
+    )  # unique constraints prevents the same email from registering twice
+    password = Column(String, nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=text("now()")
+    )
+
+    posts = relationship("Post", back_populates="owner")
