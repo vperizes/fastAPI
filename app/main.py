@@ -6,7 +6,7 @@ from psycopg.rows import dict_row
 
 from . import models
 from .database import engine
-from .routes import postRouter, userRouter
+from .routes import postRouter, userRouter, authRouter
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -30,6 +30,7 @@ except Exception as err:
     print("Error: ", err)
 
 #### import routes
+app.include_router(authRouter.router)
 app.include_router(postRouter.router)
 app.include_router(userRouter.router)
 
