@@ -2,6 +2,13 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+############# User schemas
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
