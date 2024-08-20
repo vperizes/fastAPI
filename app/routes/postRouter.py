@@ -1,7 +1,7 @@
 from fastapi import status, HTTPException, Response, Depends, APIRouter
 from sqlalchemy.orm import Session
 from typing import List
-from .. import models, schemas
+from .. import models, schemas, oauth
 from ..database import get_db
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -19,7 +19,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 @router.post("/new", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
-def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
+def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current_user_id: int = Depends(oauth.get_current_user)):
     # cur.execute(
     #     """INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *;""",
     #     (post.title, post.content, post.published),
@@ -28,7 +28,7 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # conn.commit()  # persist change to db
 
     # **post.model_dump() creates a dict and unpacks it with "**". This replaces the need for 'title=post.title, ...'
-
+    print(current_user_id)
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
     db.commit()
