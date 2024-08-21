@@ -12,28 +12,6 @@ class TokenData(BaseModel):
     id: Optional[int] = None
 
 
-############# POST SCHEMAS (pydantic models ----> defines shape of data)
-class PostBase(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-
-
-class PostCreate(PostBase):
-    pass
-
-
-#### this is response model
-class Post(PostBase):
-    id: int
-    user_id: int
-    created_at: datetime
-
-    class Config:
-        orm_mode = True
-
-
-
 ############# User schemas
 class UserLogin(BaseModel):
     email: EmailStr
@@ -51,7 +29,30 @@ class UserCreate(UserBase):
 
 class UserOut(UserBase):
     id: int
-    posts: list[PostBase] = []
 
     class Config:
         orm_mode = True
+
+
+
+############# POST SCHEMAS (pydantic models ----> defines shape of data)
+class PostBase(BaseModel):
+    title: str
+    content: str
+    published: bool = True
+
+
+class PostCreate(PostBase):
+    pass
+
+
+#### this is response model
+class Post(PostBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    author: UserOut
+
+    class Config:
+        orm_mode = True
+
