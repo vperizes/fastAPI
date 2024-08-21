@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 
+############# TOKEN SCHEMAS
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -11,8 +12,29 @@ class TokenData(BaseModel):
     id: Optional[int] = None
 
 
-############# User schemas
+############# POST SCHEMAS (pydantic models ----> defines shape of data)
+class PostBase(BaseModel):
+    title: str
+    content: str
+    published: bool = True
 
+
+class PostCreate(PostBase):
+    pass
+
+
+#### this is response model
+class Post(PostBase):
+    id: int
+    user_id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+
+############# User schemas
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -29,26 +51,7 @@ class UserCreate(UserBase):
 
 class UserOut(UserBase):
     id: int
-
-    class Config:
-        orm_mode = True
-
-
-# create schema (pydantic model) that extends BaseModel class (defines shape of data)
-class PostBase(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-
-
-class PostCreate(PostBase):
-    pass
-
-
-#### this is response model
-class Post(PostBase):
-    id: int
-    created_at: datetime
+    posts: list[PostBase] = []
 
     class Config:
         orm_mode = True
