@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-import os
 import jwt
 from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta, timezone
