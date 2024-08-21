@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
-
-
 from . import models
 from .database import engine
 from .routes import postRouter, userRouter, authRouter

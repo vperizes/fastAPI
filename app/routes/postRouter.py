@@ -12,20 +12,13 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 
 @router.get("/", response_model=List[schemas.Post])
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth.get_current_user), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
-    # cur.execute("SELECT * FROM posts")
-    # all_posts = cur.fetchall()
+    
     all_posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
     return all_posts
 
 
 @router.post("/new", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth.get_current_user)):
-    # cur.execute(
-    #     """INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *;""",
-    #     (post.title, post.content, post.published),
-    # )
-    # new_post = cur.fetchone()
-    # conn.commit()  # persist change to db
 
     # **post.model_dump() creates a dict and unpacks it with "**". This replaces the need for 'title=post.title, ...'
 
@@ -38,8 +31,7 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current
 
 @router.get("/{id}", response_model=schemas.Post)
 def get_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth.get_current_user)):
-    # cur.execute("""SELECT * FROM posts WHERE id = %s;""", [id])
-    # post = cur.fetchone()
+   
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(
@@ -50,9 +42,7 @@ def get_post(id: int, db: Session = Depends(get_db), current_user: int = Depends
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth.get_current_user)):
-    # cur.execute(""" DELETE FROM posts WHERE id = %s RETURNING *; """, [id])
-    # deleted_post = cur.fetchone()
-    # conn.commit()
+    
     post_query = db.query(models.Post).filter(models.Post.id == id)
 
     post = post_query.first()
@@ -73,12 +63,7 @@ def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depe
 
 @router.put("/{id}", response_model=schemas.Post)
 def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth.get_current_user)):
-    # cur.execute(
-    #     """ UPDATE posts SET title = %s, content = %s, published = %s WHERE id=%s RETURNING *; """,
-    #     (post.title, post.content, post.published, id),
-    # )
-    # updated_post = cur.fetchone()
-    # conn.commit()
+   
     updated_post_query = db.query(models.Post).filter(models.Post.id == id)
 
     updated_post = updated_post_query.first()
