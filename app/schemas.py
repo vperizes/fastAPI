@@ -57,6 +57,6 @@ class Post(PostBase):
         orm_mode = True
 
 ############# Vote schemas
-class VostCast(BaseModel):
+class VoteCast(BaseModel):
     post_id: int
     vote_dir: int
