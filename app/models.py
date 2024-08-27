@@ -41,3 +41,10 @@ class User(Base):
     )
 
     posts = relationship("Post", back_populates="author")
+
+
+class Vote(Base):
+    __tablename__="votes"
+
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True)
