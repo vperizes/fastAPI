@@ -20,13 +20,13 @@ def vote(vote: schemas.VoteCast, current_user: int = Depends(oauth.get_current_u
         if found_vote:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"User {current_user.id} has alredy liked post {vote.post_id}.")
         
-        # add logic to like voteif found vote is null
+        # add logic to like vote if found vote is null
         new_vote = models.Vote(post_id=vote.post_id, user_id = current_user.id)
         db.add(new_vote)
         db.commit()
         return {"message":"Successfully added vote"}
 
-    else:
+    if(vote.vote_dir == 0):
         # cant delete vote that does not exist
         if not found_vote:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vote does not exist")
@@ -35,3 +35,7 @@ def vote(vote: schemas.VoteCast, current_user: int = Depends(oauth.get_current_u
         vote_query.delete(synchronize_session=False)
         db.commit()
         return {"message":"Vote deleted"}
+    
+    if(vote.vote_dir !=1 or vote.vote_dir != 0):
+        print(vote.vote_dir)
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
