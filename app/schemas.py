@@ -53,8 +53,14 @@ class Post(PostBase):
     created_at: datetime
     author: UserOut
 
+
+class PostOut(BaseModel):
+    Post: Post
+    likes: int
+
     class Config:
         orm_mode = True
+
 
 ############# Vote schemas
 class VoteCast(BaseModel):
