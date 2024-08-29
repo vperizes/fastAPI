@@ -12,6 +12,12 @@ router = APIRouter(prefix='/vote', tags=["Votes"])
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def vote(vote: schemas.VoteCast, current_user: int = Depends(oauth.get_current_user), db: Session = Depends(get_db)):
 
+    post = db.query(models.Post).filter(models.Post.id == vote.post_id).first()
+
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {vote.post_id} does not exist")
+
+
     # query to see if vote already exists given the current post and curr user
     vote_query = db.query(models.Vote).filter(models.Vote.user_id == current_user.id, models.Vote.post_id == vote.post_id)
     found_vote = vote_query.first()
