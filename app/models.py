@@ -12,7 +12,7 @@ from sqlalchemy.sql.expression import text
 from .database import Base
 
 
-# this is sqlalchemy model (define what table looks like)
+#sqlalchemy models (define what table looks like)
 class Post(Base):
     __tablename__ = "posts"
 
